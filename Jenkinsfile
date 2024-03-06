@@ -1,7 +1,7 @@
 pipeline {
     agent any
      tools {
-        maven 'maven' #name you have given to maven in global too configuration 
+        maven 'maven' //name you have given to maven in global too configuration 
         }
     stages {
         stage("Test"){
@@ -24,7 +24,7 @@ pipeline {
         stage("Deploy on Test"){
             steps{
                 // deploy on container -> plugin
-                deploy adapters: [tomcat9(credentialsId: 'test-server', path: '', url: 'http://172.31.4.63:8080')], contextPath: '/app', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'testdetails', path: '', url: 'http://172.31.4.63:8080')], contextPath: '/app', war: '**/*.war'
               
             }
             
@@ -37,7 +37,7 @@ pipeline {
             
             steps{
                 // deploy on container -> plugin
-                deploy adapters: [tomcat9(credentialsId: 'prod-server', path: '', url: 'http://172.31.4.149:8080')], contextPath: '/app', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'proddetails', path: '', url: 'http://172.31.4.149:8080')], contextPath: '/app', war: '**/*.war'
 
             }
         }
