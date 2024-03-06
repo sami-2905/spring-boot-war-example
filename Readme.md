@@ -1,4 +1,4 @@
-# Spring Boot Hello World Example Project.
+# Spring Boot Hello World Example Project..
 
 - check is user a root user.
 - apt-get update
