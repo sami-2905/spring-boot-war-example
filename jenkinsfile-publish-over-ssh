@@ -35,7 +35,7 @@ pipeline {
                                         makeEmptyDirs: false,
                                         noDefaultExcludes: false,
                                         patternSeparator: '[, ]+',
-                                        remoteDirectory: '/app', // Remote directory where war should be transferred
+                                        remoteDirectory: '/var/lib/tomcat9/webapps/app', // Remote directory where war should be transferred
                                         remoteDirectorySDF: false,
                                         removePrefix: '', // Prefix to remove from transferred file names (optional)
                                         sourceFiles: '**/*.war' // Pattern to select files for transfer
@@ -70,7 +70,7 @@ pipeline {
                                         makeEmptyDirs: false,
                                         noDefaultExcludes: false,
                                         patternSeparator: '[, ]+',
-                                        remoteDirectory: '/app', // Remote directory where war should be transferred
+                                        remoteDirectory: '/var/lib/tomcat9/webapps/app', // Remote directory where war should be transferred
                                         remoteDirectorySDF: false,
                                         removePrefix: '', // Prefix to remove from transferred file names (optional)
                                         sourceFiles: '**/*.war' // Pattern to select files for transfer
