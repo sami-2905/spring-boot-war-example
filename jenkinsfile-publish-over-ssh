@@ -17,16 +17,20 @@ pipeline {
         }
         stage("Deploy on Test") {
             steps {
-                deployTestServer()
+                script {
+                    deployTestServer()
+                }
             }
         }
         stage("Deploy on Prod") {
-            input {
-                message "Should we continue?"
-                ok "Yes we Should"
-            }
             steps {
-                deployProdServer()
+                input {
+                    message "Should we continue?"
+                    ok "Yes we Should"
+                }
+                script {
+                    deployProdServer()
+                }
             }
         }
     }
@@ -60,7 +64,7 @@ def deployTestServer() {
             )
         ]
     )
-    sshCommand remote: 'testuser', command: "sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
+    sh "ssh testuser sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
 
 def deployProdServer() {
@@ -78,5 +82,5 @@ def deployProdServer() {
             )
         ]
     )
-    sshCommand remote: 'produser', command: "sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
+    sh "ssh produser sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
