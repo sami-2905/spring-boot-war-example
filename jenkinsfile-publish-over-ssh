@@ -24,11 +24,8 @@ pipeline {
         }
         stage("Deploy on Prod") {
             steps {
-                input {
-                    message "Should we continue?"
-                    ok "Yes we Should"
-                }
                 script {
+                    input(message: "Should we continue?", ok: "Yes we Should")
                     deployProdServer()
                 }
             }
