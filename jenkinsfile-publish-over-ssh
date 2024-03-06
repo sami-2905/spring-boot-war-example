@@ -50,17 +50,17 @@ def deployTestServer() {
         continueOnError: false,
         publishers: [
             sshPublisherDesc(
-                configName: 'test-server',
+                configName: 'testuser',
                 transfers: [
                     sshTransfer(
-                        sourceFiles: 'target/*.war',
-                        remoteDirectory: '/home/test-user/'
+                        sourceFiles: '*.war',
+                        remoteDirectory: '/home/testuser/app'
                     )
                 ]
             )
         ]
     )
-    sshCommand remote: 'test-server', command: "mkdir -p /var/lib/tomcat9/webapps/app && cp /home/test-user/*.war /var/lib/tomcat9/webapps/app"
+    sshCommand remote: 'testuser', command: "sudo cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
 
 def deployProdServer() {
@@ -68,15 +68,15 @@ def deployProdServer() {
         continueOnError: false,
         publishers: [
             sshPublisherDesc(
-                configName: 'prod-server',
+                configName: 'produser',
                 transfers: [
                     sshTransfer(
-                        sourceFiles: 'target/*.war',
-                        remoteDirectory: '/home/prod-user/'
+                        sourceFiles: '*.war',
+                        remoteDirectory: '/home/produser/app'
                     )
                 ]
             )
         ]
     )
-    sshCommand remote: 'prod-server', command: "mkdir -p /var/lib/tomcat9/webapps/app && cp /home/prod-user/*.war /var/lib/tomcat9/webapps/app"
+    sshCommand remote: 'produser', command: "sudo cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
