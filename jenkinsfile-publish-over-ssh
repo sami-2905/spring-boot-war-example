@@ -1,88 +1,44 @@
 pipeline {
     agent any
+    
     tools {
-        maven 'maven' //name you have given to Maven in global tool configuration 
+        maven 'maven' // Name you have given to Maven in global tool configuration 
     }
+    
     stages {
-        stage("Test"){
+        stage("Test") {
             steps {
-                // mvn test
                 slackSend channel: 'jenkins-pipeline', message: 'Job Started'
                 sh "mvn test"
             }
         }
-        stage("Build"){
+        
+        stage("Build") {
             steps {
                 sh "mvn package"
             }
         }
-        stage("Deploy on Test"){
+        
+        stage("Deploy on Test") {
             steps {
                 script {
-                    sshPublisher(
-                        continueOnError: false,
-                        failOnError: true,
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: "testuser", // Name of SSH configuration in Jenkins
-                                transfers: [
-                                    sshTransfer(
-                                        cleanRemote: false,
-                                        excludes: '',
-                                        execCommand: '', // Command to execute after transfer (optional)
-                                        execTimeout: 120000,
-                                        flatten: false,
-                                        makeEmptyDirs: false,
-                                        noDefaultExcludes: false,
-                                        patternSeparator: '[, ]+',
-                                        remoteDirectory: '/app', // Remote directory where war should be transferred
-                                        remoteDirectorySDF: false,
-                                        removePrefix: '', // Prefix to remove from transferred file names (optional)
-                                        sourceFiles: '**/*.war' // Pattern to select files for transfer
-                                    )
-                                ]
-                            )
-                        ]
-                    )
+                    deployTestServer()
+                    copyToTomcatTest()
                 }
             }
         }
-        stage("Deploy on Prod"){
-            input {
-                message "Should we continue?"
-                ok "Yes we Should"
-            }
+        
+        stage("Deploy on Prod") {
             steps {
                 script {
-                    sshPublisher(
-                        continueOnError: false,
-                        failOnError: true,
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: "produser", // Name of SSH configuration in Jenkins
-                                transfers: [
-                                    sshTransfer(
-                                        cleanRemote: false,
-                                        excludes: '',
-                                        execCommand: '', // Command to execute after transfer (optional)
-                                        execTimeout: 120000,
-                                        flatten: false,
-                                        makeEmptyDirs: false,
-                                        noDefaultExcludes: false,
-                                        patternSeparator: '[, ]+',
-                                        remoteDirectory: '/app', // Remote directory where war should be transferred
-                                        remoteDirectorySDF: false,
-                                        removePrefix: '', // Prefix to remove from transferred file names (optional)
-                                        sourceFiles: '**/*.war' // Pattern to select files for transfer
-                                    )
-                                ]
-                            )
-                        ]
-                    )
+                    input(message: "Should we continue?", ok: "Yes we Should")
+                    deployProdServer()
+                    copyToTomcatProd()
                 }
             }
         }
     }
+    
     post {
         always {
             echo "========always========"
@@ -96,4 +52,68 @@ pipeline {
             slackSend channel: 'jenkins-pipeline', message: 'Job Failed'
         }
     }
+}
+
+def deployTestServer() {
+    sshPublisher(
+        continueOnError: false,
+        failOnError: true,
+        publishers: [
+            sshPublisherDesc(
+                configName: "testuser", // Name of SSH configuration in Jenkins
+                transfers: [
+                    sshTransfer(
+                        cleanRemote: false,
+                        excludes: '',
+                        execCommand: '', // Command to execute after transfer (optional)
+                        execTimeout: 120000,
+                        flatten: false,
+                        makeEmptyDirs: false,
+                        noDefaultExcludes: false,
+                        patternSeparator: '[, ]+',
+                        remoteDirectory: '/app', // Remote directory where war should be transferred
+                        remoteDirectorySDF: false,
+                        removePrefix: '', // Prefix to remove from transferred file names (optional)
+                        sourceFiles: '**/*.war' // Pattern to select files for transfer
+                    )
+                ]
+            )
+        ]
+    )
+}
+
+def deployProdServer() {
+    sshPublisher(
+        continueOnError: false,
+        failOnError: true,
+        publishers: [
+            sshPublisherDesc(
+                configName: "produser", // Name of SSH configuration in Jenkins
+                transfers: [
+                    sshTransfer(
+                        cleanRemote: false,
+                        excludes: '',
+                        execCommand: '', // Command to execute after transfer (optional)
+                        execTimeout: 120000,
+                        flatten: false,
+                        makeEmptyDirs: false,
+                        noDefaultExcludes: false,
+                        patternSeparator: '[, ]+',
+                        remoteDirectory: '/app', // Remote directory where war should be transferred
+                        remoteDirectorySDF: false,
+                        removePrefix: '', // Prefix to remove from transferred file names (optional)
+                        sourceFiles: '**/*.war' // Pattern to select files for transfer
+                    )
+                ]
+            )
+        ]
+    )
+}
+
+def copyToTomcatTest() {
+    sh "sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
+}
+
+def copyToTomcatProd() {
+    sh "sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
