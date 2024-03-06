@@ -24,7 +24,7 @@ pipeline {
                         failOnError: true,
                         publishers: [
                             sshPublisherDesc(
-                                configName: "test-server", // Name of SSH configuration in Jenkins
+                                configName: "testuser", // Name of SSH configuration in Jenkins
                                 transfers: [
                                     sshTransfer(
                                         cleanRemote: false,
@@ -59,7 +59,7 @@ pipeline {
                         failOnError: true,
                         publishers: [
                             sshPublisherDesc(
-                                configName: "prod-server", // Name of SSH configuration in Jenkins
+                                configName: "produser", // Name of SSH configuration in Jenkins
                                 transfers: [
                                     sshTransfer(
                                         cleanRemote: false,
