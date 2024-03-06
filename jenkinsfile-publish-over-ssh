@@ -50,11 +50,11 @@ def deployTestServer() {
         continueOnError: false,
         publishers: [
             sshPublisherDesc(
-                configName: 'testuser',
+                configName: 'test-server',
                 transfers: [
                     sshTransfer(
                         sourceFiles: 'target/*.war',
-                        remoteDirectory: '/var/lib/tomcat9/webapps'
+                        remoteDirectory: '/var/lib/tomcat9/webapps/app'
                     )
                 ]
             )
@@ -67,11 +67,11 @@ def deployProdServer() {
         continueOnError: false,
         publishers: [
             sshPublisherDesc(
-                configName: 'produser',
+                configName: 'prod-server',
                 transfers: [
                     sshTransfer(
                         sourceFiles: 'target/*.war',
-                        remoteDirectory: '/var/lib/tomcat9/webapps'
+                        remoteDirectory: '/var/lib/tomcat9/webapps/app'
                     )
                 ]
             )
