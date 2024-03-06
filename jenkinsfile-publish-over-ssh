@@ -1,0 +1,99 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven' //name you have given to Maven in global tool configuration 
+    }
+    stages {
+        stage("Test"){
+            steps {
+                // mvn test
+                slackSend channel: 'jenkins-pipeline', message: 'Job Started'
+                sh "mvn test"
+            }
+        }
+        stage("Build"){
+            steps {
+                sh "mvn package"
+            }
+        }
+        stage("Deploy on Test"){
+            steps {
+                script {
+                    sshPublisher(
+                        continueOnError: false,
+                        failOnError: true,
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: "test-server", // Name of SSH configuration in Jenkins
+                                transfers: [
+                                    sshTransfer(
+                                        cleanRemote: false,
+                                        excludes: '',
+                                        execCommand: '', // Command to execute after transfer (optional)
+                                        execTimeout: 120000,
+                                        flatten: false,
+                                        makeEmptyDirs: false,
+                                        noDefaultExcludes: false,
+                                        patternSeparator: '[, ]+',
+                                        remoteDirectory: '/app', // Remote directory where war should be transferred
+                                        remoteDirectorySDF: false,
+                                        removePrefix: '', // Prefix to remove from transferred file names (optional)
+                                        sourceFiles: '**/*.war' // Pattern to select files for transfer
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
+            }
+        }
+        stage("Deploy on Prod"){
+            input {
+                message "Should we continue?"
+                ok "Yes we Should"
+            }
+            steps {
+                script {
+                    sshPublisher(
+                        continueOnError: false,
+                        failOnError: true,
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: "prod-server", // Name of SSH configuration in Jenkins
+                                transfers: [
+                                    sshTransfer(
+                                        cleanRemote: false,
+                                        excludes: '',
+                                        execCommand: '', // Command to execute after transfer (optional)
+                                        execTimeout: 120000,
+                                        flatten: false,
+                                        makeEmptyDirs: false,
+                                        noDefaultExcludes: false,
+                                        patternSeparator: '[, ]+',
+                                        remoteDirectory: '/app', // Remote directory where war should be transferred
+                                        remoteDirectorySDF: false,
+                                        removePrefix: '', // Prefix to remove from transferred file names (optional)
+                                        sourceFiles: '**/*.war' // Pattern to select files for transfer
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo "========always========"
+        }
+        success {
+            echo "========pipeline executed successfully ========"
+            slackSend channel: 'jenkins-pipeline', message: 'Success'
+        }
+        failure {
+            echo "========pipeline execution failed========"
+            slackSend channel: 'jenkins-pipeline', message: 'Job Failed'
+        }
+    }
+}
