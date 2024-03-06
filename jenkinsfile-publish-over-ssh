@@ -111,9 +111,9 @@ def deployProdServer() {
 }
 
 def copyToTomcatTest() {
-    sh "sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
+    sh "sudo -i mkdir -p /var/lib/tomcat9/webapps/app/ && sudo -i cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
 
 def copyToTomcatProd() {
-    sh "sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
+    sh "sudo-i mkdir -p /var/lib/tomcat9/webapps/app/ && sudo -i cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
