@@ -46,9 +46,35 @@ pipeline {
 }
 
 def deployTestServer() {
-    sh "scp target/*.war test-user@172.31.4.63:/var/lib/tomcat9/webapps"
+    sshPublisher(
+        continueOnError: false,
+        publishers: [
+            sshPublisherDesc(
+                configName: 'test-server',
+                transfers: [
+                    sshTransfer(
+                        sourceFiles: 'target/*.war',
+                        remoteDirectory: '/var/lib/tomcat9/webapps'
+                    )
+                ]
+            )
+        ]
+    )
 }
 
 def deployProdServer() {
-    sh "scp target/*.war prod-user@172.31.4.149:/var/lib/tomcat9/webapps"
+    sshPublisher(
+        continueOnError: false,
+        publishers: [
+            sshPublisherDesc(
+                configName: 'prod-server',
+                transfers: [
+                    sshTransfer(
+                        sourceFiles: 'target/*.war',
+                        remoteDirectory: '/var/lib/tomcat9/webapps'
+                    )
+                ]
+            )
+        ]
+    )
 }
