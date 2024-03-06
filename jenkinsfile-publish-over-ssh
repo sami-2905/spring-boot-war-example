@@ -61,7 +61,7 @@ def deployTestServer() {
             )
         ]
     )
-    sh "ssh testuser sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
+    sh "ssh testuser@test sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/testuser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
 
 def deployProdServer() {
@@ -79,5 +79,5 @@ def deployProdServer() {
             )
         ]
     )
-    sh "ssh produser sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
+    sh "ssh produser@prod sudo mkdir -p /var/lib/tomcat9/webapps/app/ && sudo cp -r /home/produser/app/*.war /var/lib/tomcat9/webapps/app/"
 }
