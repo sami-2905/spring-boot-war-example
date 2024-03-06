@@ -54,12 +54,13 @@ def deployTestServer() {
                 transfers: [
                     sshTransfer(
                         sourceFiles: 'target/*.war',
-                        remoteDirectory: '/var/lib/tomcat9/webapps/app'
+                        remoteDirectory: '/home/test-user/'
                     )
                 ]
             )
         ]
     )
+    sshCommand remote: 'test-server', command: "mkdir -p /var/lib/tomcat9/webapps/app && cp /home/test-user/*.war /var/lib/tomcat9/webapps/app"
 }
 
 def deployProdServer() {
@@ -71,10 +72,11 @@ def deployProdServer() {
                 transfers: [
                     sshTransfer(
                         sourceFiles: 'target/*.war',
-                        remoteDirectory: '/var/lib/tomcat9/webapps/app'
+                        remoteDirectory: '/home/prod-user/'
                     )
                 ]
             )
         ]
     )
+    sshCommand remote: 'prod-server', command: "mkdir -p /var/lib/tomcat9/webapps/app && cp /home/prod-user/*.war /var/lib/tomcat9/webapps/app"
 }
